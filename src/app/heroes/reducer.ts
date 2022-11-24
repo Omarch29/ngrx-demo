@@ -1,18 +1,30 @@
-import { Action } from "@ngrx/store";
+import { Action, createReducer, on } from "@ngrx/store";
 import { Hero } from "../hero";
-import { HEROES } from "../mock-heroes";
+import * as heroesApiActions from './api.actions';
+
+export interface GlobalState {
+    hero: HeroState;
+}
 
 interface HeroState {
-    heroes: Hero[];
+    heroes?: Hero[];
 }
 
 const initialState: HeroState = {
-    heroes: HEROES
+    heroes: undefined
 };
 
+const heroesReducer = createReducer(
+    initialState,
+    on(heroesApiActions.heroesFetchedSuccess, (state, {heroes}) => ({
+        ...state,
+        heroes: [...heroes]
+    }))
+);
+
 export function reducer(
-    state: HeroState = initialState, 
+    state: HeroState | undefined, 
     action: Action
     ) {
-        return state;
+        return heroesReducer(state, action);
 }

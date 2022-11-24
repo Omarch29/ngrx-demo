@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
 
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
@@ -10,16 +12,19 @@ import { HeroService } from '../hero.service';
 })
 export class HeroesComponent implements OnInit {
   heroes: Hero[] = [];
+  heroes$: Observable<Hero[]> = this.store.select(
+    state => state.hero.heroes
+    );
 
-  constructor(private heroService: HeroService) { }
+  constructor(private heroService: HeroService,
+              private readonly store: Store<{hero: {heroes: Hero[]}}>) { }
 
   ngOnInit(): void {
     this.getHeroes();
   }
 
   getHeroes(): void {
-    this.heroService.getHeroes()
-    .subscribe(heroes => this.heroes = heroes);
+    this.heroes$.subscribe(heroes => this.heroes = heroes);
   }
 
   add(name: string): void {
